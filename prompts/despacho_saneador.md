@@ -5,5 +5,5 @@ Analise o texto fornecido e determine se ele corresponde a um despacho saneador 
 Responda Despacho Saneador ou Outros em Rótulo
 
 # Prediction
-Texto: {{ Texto }}
+Texto: {{ text }}
 Rótulo:
