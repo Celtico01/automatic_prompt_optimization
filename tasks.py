@@ -4,11 +4,12 @@ import concurrent.futures
 from abc import ABC, abstractmethod
 from typing import List, Dict, Callable
 from tqdm import tqdm
+import time
 import pandas as pd
 from sklearn.metrics import accuracy_score, f1_score, classification_report
 
 class DataProcessor(ABC):
-    def __init__(self, data_dir, max_threads=1):
+    def __init__(self, data_dir, max_threads=4):
         self.data_dir = data_dir
         self.max_threads = max_threads
 
@@ -42,13 +43,36 @@ class ClassificationTask(DataProcessor):
         labels = []
         preds = []
         texts = []
+        print(5.2)
+        cont=1
         with concurrent.futures.ProcessPoolExecutor(max_workers=self.max_threads) as executor:
+            print(5.35)
             futures = [executor.submit(process_example, ex, predictor, prompt) for ex in test_exs[:n]]
-            for i, future in tqdm(enumerate(concurrent.futures.as_completed(futures)), total=len(futures), desc='running evaluate'):
-                ex, pred = future.result()
-                texts.append(ex['text'])
-                labels.append(ex['label'])
-                preds.append(pred)
+            print(5.36)
+            print(futures)
+            print(len(futures))
+            
+            while any(future.running() or not future.done() for future in futures):
+                for future in futures:
+                    if future.running():
+                        print(futures)
+                    elif future.done():
+                        print("Future finalizado.")
+                time.sleep(3)  # Para evitar sobrecarga do loop
+            try:
+                print(5.37)
+                for i, future in tqdm(enumerate(concurrent.futures.as_completed(futures)), total=len(futures), desc='running evaluate'):
+                    print(5.4)
+                    ex, pred = future.result()
+                    print(5.5)
+                    texts.append(ex['text'])
+                    labels.append(ex['label'])
+                    preds.append(pred)
+                    print(5.6)
+            except Exception as e:
+                print(f"Erro ao processar um futuro: {e}")
+                exit(e)
+
 
         accuracy = accuracy_score(labels, preds)
         f1 = f1_score(labels, preds, average='micro')
@@ -57,6 +81,7 @@ class ClassificationTask(DataProcessor):
     def evaluate(self, predictor, prompt, test_exs, n=100):
         while True:
             try:
+                print(5.1)
                 f1, texts, labels, preds = self.run_evaluate(predictor, prompt, test_exs, n=n)
                 break
             except (concurrent.futures.process.BrokenProcessPool, requests.exceptions.SSLError):

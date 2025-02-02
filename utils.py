@@ -30,17 +30,17 @@ def parse_sectioned_prompt(s):
     return result
 
 
-def chatgpt(prompt, model='gpt-4o', temperature=0.0, n=1, top_p=1, stop=None, max_tokens=1024, 
+def chatgpt(prompt, model='gpt-4o-mini', temperature=0.0, n=1, top_p=1, stop=None, max_tokens=1024, 
                   presence_penalty=0, frequency_penalty=0, logit_bias={}, timeout=10):
     messages = [{"role": "user", "content": prompt}]
     payload = {
         "messages": messages,
-        "model": model,
-        "temperature": temperature,
+        "model": os.getenv('MODEL'),
+        "temperature": float(os.getenv('TEMPERATURE')),
         "n": n,
         "top_p": top_p,
         "stop": stop,
-        "max_tokens": max_tokens,
+        "max_tokens": int(os.getenv('MAX_TOKENS')),
         "presence_penalty": presence_penalty,
         "frequency_penalty": frequency_penalty,
         "logit_bias": logit_bias

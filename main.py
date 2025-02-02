@@ -45,7 +45,7 @@ def get_args():
     parser.add_argument('--prompts', default='')
     # parser.add_argument('--config', default='default.json')
     parser.add_argument('--out', default='test_out.txt')
-    parser.add_argument('--max_threads', default=32, type=int)
+    parser.add_argument('--max_threads', default=4, type=int)
     parser.add_argument('--temperature', default=0.0, type=float)
 
     parser.add_argument('--optimizer', default='nl-gradient')
@@ -115,26 +115,30 @@ if __name__ == '__main__':
         # expand candidates
         if round > 0:
             candidates = optimizer.expand_candidates(candidates, task, gpt4, train_exs)
-
+        print(1)
         # score candidates
         scores = optimizer.score_candidates(candidates, task, gpt4, train_exs)
         [scores, candidates] = list(zip(*sorted(list(zip(scores, candidates)), reverse=True)))
-
+        print(2)
         # select candidates
         candidates = candidates[:config['beam_size']]
         scores = scores[:config['beam_size']]
-
+        print(3)
         # record candidates, estimated scores, and true scores
         with open(args.out, 'a') as outf:
             outf.write(f"======== ROUND {round}\n")
             outf.write(f'{time.time() - start}\n')
             outf.write(f'{candidates}\n')
             outf.write(f'{scores}\n')
+        print(4)
         metrics = []
         for candidate, score in zip(candidates, scores):
+            print(5)
             f1, texts, labels, preds = task.evaluate(gpt4, candidate, test_exs, n=args.n_test_exs)
+            print(6)
             metrics.append(f1)
         with open(args.out, 'a') as outf:  
             outf.write(f'{metrics}\n')
+        
 
     print("DONE!")
