@@ -1,0 +1,2 @@
+# rodar inteiro
+py .\main.py --task despacho --data_dir ./data/despacho_saneador/dados_json/ --prompts ./prompts/despacho_saneador.md --out ./data/resultado/teste-v1.txt
