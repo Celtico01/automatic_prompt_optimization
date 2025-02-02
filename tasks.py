@@ -51,14 +51,6 @@ class ClassificationTask(DataProcessor):
             print(5.36)
             print(futures)
             print(len(futures))
-            
-            while any(future.running() or not future.done() for future in futures):
-                for future in futures:
-                    if future.running():
-                        print(futures)
-                    elif future.done():
-                        print("Future finalizado.")
-                time.sleep(3)  # Para evitar sobrecarga do loop
             try:
                 print(5.37)
                 for i, future in tqdm(enumerate(concurrent.futures.as_completed(futures)), total=len(futures), desc='running evaluate'):

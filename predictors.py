@@ -19,7 +19,6 @@ class BinaryPredictor(GPT4Predictor):
     def inference(self, ex, prompt):
         prompt = Template(prompt).render(text=ex['text'])
         response = utils.chatgpt(
-            prompt, max_tokens=4, n=1, timeout=2, 
-            temperature=self.opt['temperature'])[0]
+            prompt)[0]
         pred = 1 if response.strip().upper().startswith('YES') else 0
         return pred

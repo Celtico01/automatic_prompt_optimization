@@ -129,7 +129,7 @@ class ProTeGi(PromptOptimizer):
         new_prompts = []
         for prompt in tqdm(prompts, desc=f'expanding {len(prompts)} prompts'):
             sections = utils.parse_sectioned_prompt(prompt)
-            task_section = sections['task'].strip()
+            task_section = sections['tarefa'].strip()
 
             # evaluate prompt on minibatch
             _, texts, labels, preds = task.evaluate(gpt4, prompt, minibatch)
