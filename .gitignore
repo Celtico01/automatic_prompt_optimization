@@ -1,3 +1,5 @@
 __pycache__
 .venv
 .env
+gerar_dados.ipynb
+/data/resultado/*

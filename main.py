@@ -10,6 +10,7 @@ import scores
 import tasks
 import predictors
 import optimizers
+from datetime import datetime
 
 
 def get_task_class(task_name):
@@ -125,11 +126,11 @@ if __name__ == '__main__':
         scores = scores[:config['beam_size']]
         print(3)
         # record candidates, estimated scores, and true scores
-        with open(args.out, 'a') as outf:
-            outf.write(f"======== ROUND {round}\n")
-            outf.write(f'{time.time() - start}\n')
-            outf.write(f'{candidates}\n')
-            outf.write(f'{scores}\n')
+        with open(args.out, 'a', encoding='utf-8') as outf:
+            outf.write(f"======== ROUND {round}\n--------\n")
+            outf.write(f'{datetime.now().strftime("%d/%m/%Y %H:%M:%S")}\n--------\n')
+            outf.write(f'{candidates}\n--------\n')
+            outf.write(f'{scores}\n--------\n')
         print(4)
         metrics = []
         for candidate, score in zip(candidates, scores):
@@ -138,7 +139,7 @@ if __name__ == '__main__':
             print(6)
             metrics.append(f1)
         with open(args.out, 'a') as outf:  
-            outf.write(f'{metrics}\n')
+            outf.write(f'{metrics}\n--------\n')
         
 
     print("DONE!")

@@ -43,24 +43,16 @@ class ClassificationTask(DataProcessor):
         labels = []
         preds = []
         texts = []
-        print(5.2)
-        cont=1
         with concurrent.futures.ProcessPoolExecutor(max_workers=self.max_threads) as executor:
-            print(5.35)
             futures = [executor.submit(process_example, ex, predictor, prompt) for ex in test_exs[:n]]
-            print(5.36)
             print(futures)
             print(len(futures))
             try:
-                print(5.37)
                 for i, future in tqdm(enumerate(concurrent.futures.as_completed(futures)), total=len(futures), desc='running evaluate'):
-                    print(5.4)
                     ex, pred = future.result()
-                    print(5.5)
                     texts.append(ex['text'])
                     labels.append(ex['label'])
                     preds.append(pred)
-                    print(5.6)
             except Exception as e:
                 print(f"Erro ao processar um futuro: {e}")
                 exit(e)
@@ -73,7 +65,6 @@ class ClassificationTask(DataProcessor):
     def evaluate(self, predictor, prompt, test_exs, n=100):
         while True:
             try:
-                print(5.1)
                 f1, texts, labels, preds = self.run_evaluate(predictor, prompt, test_exs, n=n)
                 break
             except (concurrent.futures.process.BrokenProcessPool, requests.exceptions.SSLError):

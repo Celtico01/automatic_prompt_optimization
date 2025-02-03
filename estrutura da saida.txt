@@ -1,0 +1,10 @@
+ROUND X
+--------
+Hora
+--------
+"Candidato"
+--------
+Score
+--------
+metrics: [precision, recall, f_score, true_sum]
+--------
