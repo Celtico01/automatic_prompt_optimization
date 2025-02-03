@@ -2,9 +2,9 @@ ROUND X
 --------
 Hora
 --------
-"Candidato"
+"Candidatos"
 --------
-Score
+Score - média de acertos dos candidatos
 --------
-metrics: [precision, recall, f_score, true_sum]
+metrics - F1 score dos candidatos
 --------
