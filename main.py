@@ -110,6 +110,7 @@ if __name__ == '__main__':
     candidates = [open(fp.strip()).read() for fp in args.prompts.split(',')]
 
     for round in tqdm(range(config['rounds'] + 1)):
+        # TODO arrumar estrutura de saida...
         print("STARTING ROUND ", round)
         start = time.time()
 
@@ -133,6 +134,7 @@ if __name__ == '__main__':
             outf.write(f'{scores}\n--------\n')
         print(4)
         metrics = []
+        # TODO : Testar apenas o melhor candidato e não todos!
         for candidate, score in zip(candidates, scores):
             print(5)
             f1, texts, labels, preds = task.evaluate(gpt4, candidate, test_exs, n=args.n_test_exs)
