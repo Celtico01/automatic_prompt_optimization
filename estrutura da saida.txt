@@ -2,9 +2,9 @@ ROUND X
 --------
 Hora
 --------
-"Candidatos"
+"Candidatos" os "4" melhores
 --------
-Score - média de acertos dos candidatos
+Score - média de acertos dos candidatos (Conjunto de treino)
 --------
-metrics - F1 score dos candidatos
+metrics - F1 score dos candidatos (Conjunto de teste)
 --------

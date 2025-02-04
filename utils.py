@@ -41,7 +41,10 @@ def chatgpt(prompt, n=1, top_p=1, stop=None, presence_penalty=0, frequency_penal
             logit_bias=logit_bias,
             timeout=timeout,
         )
-        salvar_resposta(response)
+        for choice in response.choices:
+            if len(choice.message.content) > 5:
+                salvar_resposta(choice.message.content)
+        
         return [choice.message.content for choice in response.choices]
     except openai.APIError as e:
         print(f"Erro na API: {e}")
