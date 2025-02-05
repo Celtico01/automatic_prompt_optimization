@@ -158,7 +158,10 @@ class UCBBandits:
 
     def get_scores(self):
         # Some counts may be 0, so we need to avoid division by 0.
-        return np.divide(self.scores, self.counts, out=np.zeros_like(self.scores), where=self.counts != 0)
+        #return np.divide(self.scores, self.counts, out=np.zeros_like(self.scores), where=self.counts != 0)
+        # retorna float
+        return list(map(float, np.divide(self.scores, self.counts, out=np.zeros_like(self.scores), where=self.counts != 0)))
+
 
     def choose(self, n, t):
         if np.sum(self.counts) == 0:
@@ -210,7 +213,7 @@ class UCBBanditEvaluator:
                     pass
             bandit_algo.update(sampled_prompts_idx, scores)
             
-        return bandit_algo.get_scores().tolist()
+        return bandit_algo.get_scores()
 
 
 class BruteForceEvaluator:

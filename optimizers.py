@@ -16,6 +16,7 @@ class PromptOptimizer(ABC):
     def expand_candidates(self, prompts, task, gpt4, train_exs):
         pass
 
+# TODO : Traduzir as instruções
 class ProTeGi(PromptOptimizer):
     """ ProTeGi: Prompt Optimization with Textual Gradients
     """

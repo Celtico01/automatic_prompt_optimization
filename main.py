@@ -11,6 +11,8 @@ import tasks
 import predictors
 import optimizers
 from datetime import datetime
+from dotenv import load_dotenv
+load_dotenv()
 
 
 def get_task_class(task_name):
@@ -44,6 +46,7 @@ def get_args():
     parser.add_argument('--task', default='')
     parser.add_argument('--data_dir', default='')
     parser.add_argument('--prompts', default='')
+    parser.add_argument('--nome_saida', default='t1', type=str)
     # parser.add_argument('--config', default='default.json')
     parser.add_argument('--out', default='test_out.txt')
     parser.add_argument('--max_threads', default=4, type=int)
@@ -82,6 +85,9 @@ def get_args():
 
 if __name__ == '__main__':
     args = get_args()
+    
+    saida = {}
+
 
     config = vars(args)
 
@@ -103,13 +109,23 @@ if __name__ == '__main__':
         os.remove(args.out)
 
     print(config)
+    #to remove
+    #with open(args.out, 'a') as outf:
+    #    outf.write(json.dumps(config) + '\n')
+    saida['config'] = config
+    saida['modelo'] = os.getenv('MODEL')
+    saida['max_tokens'] = os.getenv('MAX_TOKENS')
+    saida['temperature'] = os.getenv('TEMPERATURE')
 
-    with open(args.out, 'a') as outf:
-        outf.write(json.dumps(config) + '\n')
+    candidates = [open(fp.strip(), 'r', encoding='utf-8').read() for fp in args.prompts.split(',')]
 
-    candidates = [open(fp.strip()).read() for fp in args.prompts.split(',')]
-
+    saida['round0'] = {'hora_producao' : datetime.now().strftime("%d/%m/%Y %H:%M:%S"),
+                       'candidatos' : candidates[0],
+                       'scores' : None,
+                       'f1' : None}
+    cont=1
     for round in tqdm(range(config['rounds'] + 1)):
+        candidato=1
         # TODO arrumar estrutura de saida...
         print("STARTING ROUND ", round)
         start = time.time()
@@ -126,22 +142,62 @@ if __name__ == '__main__':
         candidates = candidates[:config['beam_size']]
         scores = scores[:config['beam_size']]
         print(3)
-        # record candidates, estimated scores, and true scores
-        with open(args.out, 'a', encoding='utf-8') as outf:
-            outf.write(f"======== ROUND {round}\n--------\n")
-            outf.write(f'{datetime.now().strftime("%d/%m/%Y %H:%M:%S")}\n--------\n')
-            outf.write(f'{candidates}\n--------\n')
-            outf.write(f'{scores}\n--------\n')
-        print(4)
-        metrics = []
-        # TODO : Testar apenas o melhor candidato e não todos!
-        for candidate, score in zip(candidates, scores):
-            print(5)
-            f1, texts, labels, preds = task.evaluate(gpt4, candidate, test_exs, n=args.n_test_exs)
-            print(6)
-            metrics.append(f1)
-        with open(args.out, 'a') as outf:  
-            outf.write(f'{metrics}\n--------\n')
+        saida['round'+str(cont)] = {'hora_producao' : datetime.now().strftime("%d/%m/%Y %H:%M:%S"),
+                                    'candidatos' : candidates,
+                                    'scores' : scores,
+                                    'f1' : None}
+        cont+=1
         
+        #to be removed
+        # record candidates, estimated scores, and true scores
+        #with open(args.out, 'a', encoding='utf-8') as outf:
+        #    outf.write(f"======== ROUND {round}\n--------\n")
+        #    outf.write(f'{datetime.now().strftime("%d/%m/%Y %H:%M:%S")}\n--------\n')
+        #    outf.write(f'{candidates}\n--------\n')
+        #    outf.write(f'{scores}\n--------\n')
+        #print(4)
+    
+    # TODO : Testar apenas o melhor candidato e não todos! - DONE to be removed
+    # TODO : Melhorar estrutura de saida - DONE to be removed
+    
+    for candidate, score in zip(candidates, scores):
+        print(5)
+        f1, texts, labels, preds = task.evaluate(gpt4, candidate, test_exs, n=args.n_test_exs)
+        print(6)
+        
+    # to remove    
+        #metrics.append(f1)
+    #with open(args.out, 'a') as outf:  
+        #outf.write(f'{metrics}\n--------\n')
+    
+    melhor_candidato = None
+    melhor_score = float('-inf')
+    melhor_round = int('-inf')
+
+    for key, value in saida.items():
+        if key == 'round0':  # Ignorar o round 0
+            continue
+        
+        candidatos_list = value['candidatos']
+        scores_list = value['scores']
+        
+        if candidatos_list and scores_list:  # Verifica se não estão vazios
+            max_index = scores_list.index(max(scores_list))  # Obtém o índice do maior score
+            if scores_list[max_index] > melhor_score:  # Verifica se é o melhor score encontrado
+                melhor_score = scores_list[max_index]
+                melhor_candidato = candidatos_list[max_index]
+                melhor_round = key
+
+    print(f"Melhor candidato: {melhor_candidato} com score {melhor_score}")
+
+    f1, texts, labels, preds = task.evaluate(gpt4, melhor_candidato, test_exs, n=args.n_test_exs)
+
+    saida[melhor_round]['f1'] = f1
+
+    dict_final = {}
+    dict_final[args['nome_saida']] = saida
+
+    with open(args['out'] + '/' + args['nome_saida'], 'w', encoding='utf-8') as file:
+        json.dump(dict_final, file, ensure_ascii=False, indent=4)
 
     print("DONE!")
