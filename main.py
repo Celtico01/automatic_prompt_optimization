@@ -48,7 +48,7 @@ def get_args():
     parser.add_argument('--prompts', default='')
     parser.add_argument('--nome_saida', default='t1', type=str)
     # parser.add_argument('--config', default='default.json')
-    parser.add_argument('--out', default='test_out.txt')
+    parser.add_argument('--out', default='data/resultado')
     parser.add_argument('--max_threads', default=4, type=int)
     parser.add_argument('--temperature', default=0.0, type=float)
 
@@ -88,7 +88,6 @@ if __name__ == '__main__':
     
     saida = {}
 
-
     config = vars(args)
 
     config['eval_budget'] = config['samples_per_eval'] * config['eval_rounds'] * config['eval_prompts_per_round']
@@ -105,8 +104,9 @@ if __name__ == '__main__':
     train_exs = task.get_train_examples()
     test_exs = task.get_test_examples()
 
-    if os.path.exists(args.out):
-        os.remove(args.out)
+    # to be removed
+    #if os.path.exists(args.out):
+        #os.remove(args.out)
 
     print(config)
     #to remove
@@ -120,7 +120,7 @@ if __name__ == '__main__':
     candidates = [open(fp.strip(), 'r', encoding='utf-8').read() for fp in args.prompts.split(',')]
 
     saida['round0'] = {'hora_producao' : datetime.now().strftime("%d/%m/%Y %H:%M:%S"),
-                       'candidatos' : candidates[0],
+                       'candidatos' : 'teste0',#candidates[0],
                        'scores' : None,
                        'f1' : None}
     cont=1
@@ -144,8 +144,8 @@ if __name__ == '__main__':
         print(3)
         saida['round'+str(cont)] = {'hora_producao' : datetime.now().strftime("%d/%m/%Y %H:%M:%S"),
                                     'candidatos' : candidates,
-                                    'scores' : scores,
-                                    'f1' : None}
+                                    'scores' : scores
+                                    }
         cont+=1
         
         #to be removed
@@ -160,10 +160,11 @@ if __name__ == '__main__':
     # TODO : Testar apenas o melhor candidato e não todos! - DONE to be removed
     # TODO : Melhorar estrutura de saida - DONE to be removed
     
-    for candidate, score in zip(candidates, scores):
-        print(5)
-        f1, texts, labels, preds = task.evaluate(gpt4, candidate, test_exs, n=args.n_test_exs)
-        print(6)
+    # to remove
+    #for candidate, score in zip(candidates, scores):
+        #print(5)
+        #f1, texts, labels, preds = task.evaluate(gpt4, candidate, test_exs, n=args.n_test_exs)
+        #print(6)
         
     # to remove    
         #metrics.append(f1)
@@ -172,14 +173,18 @@ if __name__ == '__main__':
     
     melhor_candidato = None
     melhor_score = float('-inf')
-    melhor_round = int('-inf')
-
+    melhor_round = 0
     for key, value in saida.items():
+        if key not in ['round'+str(num) for num in range(0, config['rounds'])]:
+            continue
         if key == 'round0':  # Ignorar o round 0
             continue
-        
-        candidatos_list = value['candidatos']
-        scores_list = value['scores']
+
+        candidatos_list = saida[key]['candidatos']
+        scores_list = saida[key]['scores']
+
+        print(candidatos_list)
+        print(scores_list)
         
         if candidatos_list and scores_list:  # Verifica se não estão vazios
             max_index = scores_list.index(max(scores_list))  # Obtém o índice do maior score
@@ -192,12 +197,15 @@ if __name__ == '__main__':
 
     f1, texts, labels, preds = task.evaluate(gpt4, melhor_candidato, test_exs, n=args.n_test_exs)
 
-    saida[melhor_round]['f1'] = f1
+    saida['melhor_candidato'] = melhor_candidato
+    saida['melhor_score'] = melhor_score
+    saida['melhor_round'] = melhor_round
+    saida['f1_melhor'] = f1
 
     dict_final = {}
-    dict_final[args['nome_saida']] = saida
+    dict_final[args.nome_saida] = saida
 
-    with open(args['out'] + '/' + args['nome_saida'], 'w', encoding='utf-8') as file:
+    with open(args.out + '/' + args.nome_saida + '.json', 'a+', encoding='utf-8') as file:
         json.dump(dict_final, file, ensure_ascii=False, indent=4)
 
     print("DONE!")
