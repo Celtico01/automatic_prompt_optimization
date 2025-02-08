@@ -6,7 +6,7 @@
 ## Tested Python Version
 - Python 3.13.0
 
-## Flags Explanation
+## Flags
 
 - **task**: Nome da tarefa a ser realizada (str).  
 - **data_dir**: Diretório onde os dados de treino e teste estão localizados (str).  
