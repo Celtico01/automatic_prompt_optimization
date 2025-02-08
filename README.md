@@ -8,7 +8,7 @@
 
 ## Explicação das Flags
 <p>
-task : Nome da Tarefa a ser feita (str)
+task : Nome da Tarefa a ser feita (str) \n
 data_dir : Diretorio onde fica os dados para treino e teste (str)
 prompts : Caminho para o arquivo onde fica o prompt (str)
 out : Diretorio de saida. (str)
