@@ -112,18 +112,19 @@ if __name__ == '__main__':
     #to remove
     #with open(args.out, 'a') as outf:
     #    outf.write(json.dumps(config) + '\n')
-    saida['config'] = config
-    saida['modelo'] = os.getenv('MODEL')
-    saida['max_tokens'] = os.getenv('MAX_TOKENS')
-    saida['temperature'] = os.getenv('TEMPERATURE')
-
+    saida['configuracoes'] = {'config' : config,
+                              'modelo' : os.getenv('MODEL'),
+                              'max_tokens' : os.getenv('MAX_TOKENS')}
+    rounds = {}
+    
     candidates = [open(fp.strip(), 'r', encoding='utf-8').read() for fp in args.prompts.split(',')]
 
-    saida['round0'] = {'hora_producao' : datetime.now().strftime("%d/%m/%Y %H:%M:%S"),
-                       'candidatos' : 'teste0',#candidates[0],
-                       'scores' : None,
-                       'f1' : None}
-    cont=1
+    #saida['round0'] = {'hora_producao' : datetime.now().strftime("%d/%m/%Y %H:%M:%S"),
+    #                   'candidatos' : candidates[0],
+    #                   'scores' : None
+    #                    }
+    
+    cont=0
     for round in tqdm(range(config['rounds'] + 1)):
         candidato=1
         # TODO arrumar estrutura de saida...
@@ -136,18 +137,18 @@ if __name__ == '__main__':
         print(1)
         # score candidates
         scores = optimizer.score_candidates(candidates, task, gpt4, train_exs)
+        print(scores)
         [scores, candidates] = list(zip(*sorted(list(zip(scores, candidates)), reverse=True)))
         print(2)
         # select candidates
         candidates = candidates[:config['beam_size']]
         scores = scores[:config['beam_size']]
         print(3)
-        saida['round'+str(cont)] = {'hora_producao' : datetime.now().strftime("%d/%m/%Y %H:%M:%S"),
+        rounds['round'+str(cont)] = {'hora_producao' : datetime.now().strftime("%d/%m/%Y %H:%M:%S"),
                                     'candidatos' : candidates,
                                     'scores' : scores
                                     }
         cont+=1
-        
         #to be removed
         # record candidates, estimated scores, and true scores
         #with open(args.out, 'a', encoding='utf-8') as outf:
@@ -171,36 +172,42 @@ if __name__ == '__main__':
     #with open(args.out, 'a') as outf:  
         #outf.write(f'{metrics}\n--------\n')
     
-    melhor_candidato = None
-    melhor_score = float('-inf')
+    
+    melhor_candidato = None 
+    melhor_score = -1 
     melhor_round = 0
-    for key, value in saida.items():
-        if key not in ['round'+str(num) for num in range(0, config['rounds'])]:
-            continue
+
+    for key, value in rounds.items():  # Correção no acesso às chaves e valores       
         if key == 'round0':  # Ignorar o round 0
             continue
-
-        candidatos_list = saida[key]['candidatos']
-        scores_list = saida[key]['scores']
+        print(key)
+        print(value)
+        candidatos_list = list(rounds[key]['candidatos'])  # Converter tuplas em listas
+        scores_list = list(rounds[key]['scores'])  
 
         print(candidatos_list)
         print(scores_list)
-        
+
         if candidatos_list and scores_list:  # Verifica se não estão vazios
             max_index = scores_list.index(max(scores_list))  # Obtém o índice do maior score
             if scores_list[max_index] > melhor_score:  # Verifica se é o melhor score encontrado
                 melhor_score = scores_list[max_index]
                 melhor_candidato = candidatos_list[max_index]
-                melhor_round = key
+                melhor_round = 'prompt_' + key
 
     print(f"Melhor candidato: {melhor_candidato} com score {melhor_score}")
 
-    f1, texts, labels, preds = task.evaluate(gpt4, melhor_candidato, test_exs, n=args.n_test_exs)
+    try:
+        f1, texts, labels, preds = task.evaluate(gpt4, melhor_candidato, test_exs, n=args.n_test_exs)
 
-    saida['melhor_candidato'] = melhor_candidato
-    saida['melhor_score'] = melhor_score
-    saida['melhor_round'] = melhor_round
-    saida['f1_melhor'] = f1
+        saida['melhor_candidato'] = melhor_candidato
+        saida['melhor_score'] = melhor_score
+        saida['melhor_round'] = melhor_round
+        saida['f1_melhor'] = f1
+        saida['rounds'] = rounds
+    except Exception as e:
+        print(e)
+        exit("Problema no teste")
 
     dict_final = {}
     dict_final[args.nome_saida] = saida

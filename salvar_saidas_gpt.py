@@ -10,4 +10,4 @@ def salvar_resposta(saida, pasta="./data/resultado/historico-gpt-teste4-gpt4o-mi
     with open(caminho_arquivo, "w", encoding="utf-8") as f:
         json.dump(saida, f)
     
-    print(f"Resposta salva em: {caminho_arquivo}")
+    #print(f"Resposta salva em: {caminho_arquivo}")

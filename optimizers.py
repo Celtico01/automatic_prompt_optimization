@@ -36,8 +36,8 @@ class ProTeGi(PromptOptimizer):
         num_errors = 0
         error_idx = 0
         for i, (t, l, p) in enumerate(zip(sample_texts, sample_labels, sample_preds)):
-            error_string += f'## Example {error_idx+1}\n'
-            error_string += f'Text: \"{t.strip()}\"\nLabel: {task.stringify_prediction(l)}\nPrediction: {task.stringify_prediction(p)}\n\n'
+            error_string += f'## Exemplo {error_idx+1}\n'
+            error_string += f'Texto: \"{t.strip()}\"\nRótulo: {task.stringify_prediction(l)}\nPredição: {task.stringify_prediction(p)}\n\n'
             error_idx += 1
         return error_string.strip()
 
@@ -58,17 +58,29 @@ class ProTeGi(PromptOptimizer):
 
     def _get_gradients(self, prompt, error_string, num_feedbacks=5, n=1):
         """ Get "gradients" for a prompt based on the error string."""
+        #gradient_prompt = f"""
+        #I'm trying to write a zero-shot classifier prompt.
+        #
+        #My current prompt is:
+        #"{prompt}"
+        #
+        #But this prompt gets the following examples wrong:
+        #{error_string}
+        #
+        #give {num_feedbacks} reasons why the prompt could have gotten these examples wrong.
+        #Wrap each reason with <START> and <END>
+        #"""
         gradient_prompt = f"""
-        I'm trying to write a zero-shot classifier prompt.
-    
-        My current prompt is:
+        Estou tentando escrever um prompt para um classificador zero-shot.
+
+        Meu prompt atual é:
         "{prompt}"
 
-        But this prompt gets the following examples wrong:
+        No entanto, este prompt classifica incorretamente os seguintes exemplos:
         {error_string}
 
-        give {num_feedbacks} reasons why the prompt could have gotten these examples wrong.
-        Wrap each reason with <START> and <END>
+        Forneça {num_feedbacks} razões pelas quais o prompt pode ter cometido esses erros.
+        Envolva cada razão com <START> e <END>.
         """
         gradient_prompt = '\n'.join([line.lstrip() for line in gradient_prompt.split('\n')])
         res = utils.chatgpt(gradient_prompt, n=n)
@@ -80,22 +92,39 @@ class ProTeGi(PromptOptimizer):
 
     def apply_gradient(self, prompt, error_str, feedback_str, steps_per_gradient, n=1):
         """ Incorporate feedback gradient into a prompt."""
+        #transformation_prompt = f"""
+        #I'm trying to write a zero-shot classifier.
+        #
+        #My current prompt is:
+        #"{prompt}"
+        #
+        #But it gets the following examples wrong:
+        #{error_str}
+        #
+        #Based on these examples the problem with this prompt is that {feedback_str}
+        #
+        #Based on the above information, I wrote {steps_per_gradient} different improved prompts.
+        #Each prompt is wrapped with <START> and <END>.
+        #
+        #The {steps_per_gradient} new prompts are:
+        #"""
         transformation_prompt = f"""
-        I'm trying to write a zero-shot classifier.
-        
-        My current prompt is:
+        Estou tentando escrever um classificador zero-shot.
+
+        Meu prompt atual é:
         "{prompt}"
 
-        But it gets the following examples wrong:
+        No entanto, ele classifica incorretamente os seguintes exemplos:
         {error_str}
 
-        Based on these examples the problem with this prompt is that {feedback_str}
+        Com base nesses exemplos, o problema deste prompt é que {feedback_str}
 
-        Based on the above information, I wrote {steps_per_gradient} different improved prompts.
-        Each prompt is wrapped with <START> and <END>.
+        Com essas informações, escrevi {steps_per_gradient} versões melhoradas do prompt.
+        Cada prompt está envolvido por <START> e <END>.
 
-        The {steps_per_gradient} new prompts are:
+        Os {steps_per_gradient} novos prompts são:
         """
+
         transformation_prompt = '\n'.join([line.lstrip() for line in transformation_prompt.split('\n')])
         res = utils.chatgpt(transformation_prompt, n=n)
         new_prompts = []
@@ -105,7 +134,8 @@ class ProTeGi(PromptOptimizer):
 
     def generate_synonyms(self, prompt_section, n=3):
         """ Generate synonyms for a prompt section."""
-        rewriter_prompt = f"Generate a variation of the following instruction while keeping the semantic meaning.\n\nInput: {prompt_section}\n\nOutput:"
+        #rewriter_prompt = f"Generate a variation of the following instruction while keeping the semantic meaning.\n\nInput: {prompt_section}\n\nOutput:"
+        rewriter_prompt = f"Gerar uma variação da seguinte instrução mantendo o mesmo significado semântico.\n\nEntrada: {prompt_section}\n\nSaída:"
         new_instructions = utils.chatgpt(rewriter_prompt, n=n)
         new_instructions = [x for x in new_instructions if x]
         return new_instructions

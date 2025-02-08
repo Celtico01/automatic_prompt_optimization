@@ -14,11 +14,11 @@ class GPT4Predictor(ABC):
         pass
 
 class BinaryPredictor(GPT4Predictor):
-    categories = ['No', 'Yes']
+    categories = ['Não', 'Sim']
 
     def inference(self, ex, prompt):
         prompt = Template(prompt).render(text=ex['text'])
         response = utils.chatgpt(
             prompt)[0]
-        pred = 1 if response.strip().upper().startswith('YES') else 0
+        pred = 1 if response.strip().upper().startswith('SIM') else 0
         return pred

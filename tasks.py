@@ -73,14 +73,14 @@ class ClassificationTask(DataProcessor):
 
 
 class BinaryClassificationTask(ClassificationTask):
-    categories = ['No', 'Yes']
+    categories = ['Não', 'Sim']
 
     def stringify_prediction(self, pred):
         return BinaryClassificationTask.categories[pred]
 
 
 class DefaultHFBinaryTask(BinaryClassificationTask):
-    categories = ['No', 'Yes']
+    categories = ['Não', 'Sim']
 
     def get_train_examples(self):
         exs = []
