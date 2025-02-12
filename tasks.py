@@ -45,7 +45,6 @@ class ClassificationTask(DataProcessor):
         texts = []
         with concurrent.futures.ProcessPoolExecutor(max_workers=self.max_threads) as executor:
             futures = [executor.submit(process_example, ex, predictor, prompt) for ex in test_exs[:n]]
-            print(futures)
             print(len(futures))
             try:
                 for i, future in tqdm(enumerate(concurrent.futures.as_completed(futures)), total=len(futures), desc='running evaluate'):
@@ -84,14 +83,14 @@ class DefaultHFBinaryTask(BinaryClassificationTask):
 
     def get_train_examples(self):
         exs = []
-        for i, row in enumerate(open(self.data_dir + '/training_data.jsonl', encoding="utf-8")):
+        for i, row in enumerate(open(self.data_dir + '/training_data_v2.jsonl', encoding="utf-8")):
             row = json.loads(row.strip())
             exs.append({'id': f'train-{i}', 'label': row['label'], 'text': row['text']})
         return exs
     
     def get_test_examples(self):
         exs = []
-        for i, row in enumerate(open(self.data_dir + '/test_data.jsonl', encoding="utf-8")):
+        for i, row in enumerate(open(self.data_dir + '/test_data_v2.jsonl', encoding="utf-8")):
             row = json.loads(row.strip())
             exs.append({'id': f'test-{i}', 'label': row['label'], 'text': row['text']})
         return exs

@@ -123,7 +123,7 @@ if __name__ == '__main__':
     #                   'candidatos' : candidates[0],
     #                   'scores' : None
     #                    }
-    
+
     cont=0
     for round in tqdm(range(config['rounds'] + 1)):
         candidato=1
@@ -200,19 +200,20 @@ if __name__ == '__main__':
     try:
         f1, texts, labels, preds = task.evaluate(gpt4, melhor_candidato, test_exs, n=args.n_test_exs)
 
-        saida['melhor_candidato'] = melhor_candidato
-        saida['melhor_score'] = melhor_score
-        saida['melhor_round'] = melhor_round
-        saida['f1_melhor'] = f1
-        saida['rounds'] = rounds
     except Exception as e:
         print(e)
-        exit("Problema no teste")
 
-    dict_final = {}
-    dict_final[args.nome_saida] = saida
+    finally:
+        saida['rounds'] = rounds
+        saida['melhor_candidato'] = melhor_candidato if melhor_candidato else None
+        saida['melhor_score'] = melhor_score if melhor_score else None
+        saida['melhor_round'] = melhor_round if melhor_round else None
+        saida['f1_melhor'] = f1 if f1 else None
 
-    with open(args.out + '/' + args.nome_saida + '.json', 'a+', encoding='utf-8') as file:
-        json.dump(dict_final, file, ensure_ascii=False, indent=4)
+        dict_final = {}
+        dict_final[args.nome_saida] = saida
+
+        with open(args.out + '/' + args.nome_saida + '.json', 'a+', encoding='utf-8') as file:
+            json.dump(dict_final, file, ensure_ascii=False, indent=4)
 
     print("DONE!")

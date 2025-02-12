@@ -3,3 +3,5 @@ __pycache__
 .env
 gerar_dados.ipynb
 /data/resultado/*
+lista de proximos passos.txt
+data
