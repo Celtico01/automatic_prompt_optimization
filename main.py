@@ -18,6 +18,10 @@ load_dotenv()
 def get_task_class(task_name):
     if task_name == 'despacho':
         return tasks.DefaultHFBinaryTask
+    elif task_name == 'replica':
+        return tasks.DefaultHFBinaryTask
+    elif task_name == 'decisao_inicial':
+        return tasks.DefaultHFBinaryTask
     else:
         raise Exception(f'Tarefa não suportada: {task_name}')
 
@@ -47,6 +51,8 @@ def get_args():
     parser.add_argument('--data_dir', default='')
     parser.add_argument('--prompts', default='')
     parser.add_argument('--nome_saida', default='t1', type=str)
+    parser.add_argument('--name_train_data', default='training_data.jsonl', type=str)
+    parser.add_argument('--name_test_data', default='test_data.jsonl', type=str)
     # parser.add_argument('--config', default='default.json')
     parser.add_argument('--out', default='data/resultado')
     parser.add_argument('--max_threads', default=4, type=int)
@@ -101,8 +107,10 @@ if __name__ == '__main__':
     optimizer = optimizers.ProTeGi(
         config, evaluator, scorer, args.max_threads, bf_eval)
 
-    train_exs = task.get_train_examples()
-    test_exs = task.get_test_examples()
+    train_exs = task.get_train_examples(name_train_data=config['name_train_data'])
+    test_exs = task.get_test_examples(name_test_data=config['name_test_data'])
+    config['training_data_size'] = len(train_exs)
+    config['test_data_size'] = len(test_exs)
 
     # to be removed
     #if os.path.exists(args.out):

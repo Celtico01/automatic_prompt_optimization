@@ -81,16 +81,16 @@ class BinaryClassificationTask(ClassificationTask):
 class DefaultHFBinaryTask(BinaryClassificationTask):
     categories = ['Não', 'Sim']
 
-    def get_train_examples(self):
+    def get_train_examples(self, name_train_data='training_data.jsonl'):
         exs = []
-        for i, row in enumerate(open(self.data_dir + '/training_data_v2.jsonl', encoding="utf-8")):
+        for i, row in enumerate(open(self.data_dir + name_train_data, encoding="utf-8")):
             row = json.loads(row.strip())
             exs.append({'id': f'train-{i}', 'label': row['label'], 'text': row['text']})
         return exs
     
-    def get_test_examples(self):
+    def get_test_examples(self, name_test_data='test_data.jsonl'):
         exs = []
-        for i, row in enumerate(open(self.data_dir + '/test_data_v2.jsonl', encoding="utf-8")):
+        for i, row in enumerate(open(self.data_dir + name_test_data, encoding="utf-8")):
             row = json.loads(row.strip())
             exs.append({'id': f'test-{i}', 'label': row['label'], 'text': row['text']})
         return exs

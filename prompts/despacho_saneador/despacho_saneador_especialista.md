@@ -4,6 +4,6 @@ Analise o texto fornecido e determine se ele corresponde a um despacho saneador 
 # Formato de Saida
 Responda Sim ou Não como rótulo
 
-# Prediction
+# Predição
 Texto: {{ text }}
 Rótulo:

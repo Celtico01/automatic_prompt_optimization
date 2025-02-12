@@ -11,6 +11,8 @@
 - **task**: Nome da tarefa a ser realizada (str).  
 - **data_dir**: Diretório onde os dados de treino e teste estão localizados (str).  
 - **prompts**: Caminho para o arquivo contendo o prompt (str).  
+- **name_train_data**: Nome do arquivo com os dados de treino (str).  
+- **name_test_data**: Nome do arquivo com os dados de teste (str).  
 - **out**: Diretório de saída para os resultados (str).  
 - **max_threads**: Número máximo de threads utilizadas para gerenciar as tarefas. Maior valor pode acelerar o processo (int).  
 - **temperature**: Temperatura do modelo da OpenAI (float).  
