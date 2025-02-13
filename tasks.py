@@ -45,7 +45,7 @@ class ClassificationTask(DataProcessor):
         texts = []
         with concurrent.futures.ProcessPoolExecutor(max_workers=self.max_threads) as executor:
             futures = [executor.submit(process_example, ex, predictor, prompt) for ex in test_exs[:n]]
-            print(len(futures))
+            #print(len(futures))
             try:
                 for i, future in tqdm(enumerate(concurrent.futures.as_completed(futures)), total=len(futures), desc='running evaluate'):
                     ex, pred = future.result()

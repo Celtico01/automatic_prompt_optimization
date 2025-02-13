@@ -83,7 +83,17 @@ class ProTeGi(PromptOptimizer):
         Envolva cada razão com <START> e <END>.
         """
         gradient_prompt = '\n'.join([line.lstrip() for line in gradient_prompt.split('\n')])
-        res = utils.chatgpt(gradient_prompt, n=n)
+        
+        if self.opt['engine'] == 'gpt':
+            res = utils.GPT(gradient_prompt, n=n)
+        elif self.opt['engine'] == 'deepseek':
+            raise Exception('Não Implementado ainda')
+        elif self.opt['engine'] == 'llama':
+            res = utils.LLAMA(gradient_prompt)#, n=n)
+        else:
+            raise Exception('Opção Inválida.')
+
+
         feedbacks = []
         new_prompts = []
         for r in res:    
@@ -126,7 +136,16 @@ class ProTeGi(PromptOptimizer):
         """
 
         transformation_prompt = '\n'.join([line.lstrip() for line in transformation_prompt.split('\n')])
-        res = utils.chatgpt(transformation_prompt, n=n)
+        if self.opt['engine'] == 'gpt':
+            res = utils.GPT(transformation_prompt, n=n)
+        elif self.opt['engine'] == 'deepseek':
+            raise Exception('Não Implementado ainda')
+        elif self.opt['engine'] == 'llama':
+            res = utils.LLAMA(transformation_prompt)#, n=n)
+        else:
+            raise Exception('Opção Inválida.')
+        
+        #res = utils.chatgpt(transformation_prompt, n=n)
         new_prompts = []
         for r in res:   
             new_prompts += self.parse_tagged_text(r, "<START>", "<END>")
@@ -136,7 +155,17 @@ class ProTeGi(PromptOptimizer):
         """ Generate synonyms for a prompt section."""
         #rewriter_prompt = f"Generate a variation of the following instruction while keeping the semantic meaning.\n\nInput: {prompt_section}\n\nOutput:"
         rewriter_prompt = f"Gerar uma variação da seguinte instrução mantendo o mesmo significado semântico.\n\nEntrada: {prompt_section}\n\nSaída:"
-        new_instructions = utils.chatgpt(rewriter_prompt, n=n)
+        
+        if self.opt['engine'] == 'gpt':
+            new_instructions = utils.GPT(rewriter_prompt, n=n)
+        elif self.opt['engine'] == 'deepseek':
+            raise Exception('Não Implementado ainda')
+        elif self.opt['engine'] == 'llama':
+            new_instructions = utils.LLAMA(rewriter_prompt)#, n=n)
+        else:
+            raise Exception('Opção Inválida.')
+        
+        #new_instructions = utils.chatgpt(rewriter_prompt, n=n)
         new_instructions = [x for x in new_instructions if x]
         return new_instructions
 
@@ -159,7 +188,17 @@ class ProTeGi(PromptOptimizer):
 
         new_prompts = []
         for prompt in tqdm(prompts, desc=f'expanding {len(prompts)} prompts'):
-            sections = utils.parse_sectioned_prompt(prompt)
+            print(self.opt)
+            if self.opt['engine'] == 'gpt':
+                sections = utils.parse_sectioned_prompt(prompt)
+            elif self.opt['engine'] == 'deepseek':
+                raise Exception('Não Implementado ainda')
+            elif self.opt['engine'] == 'llama':
+                sections = utils.parse_sectioned_prompt(prompt)
+            else:
+                raise Exception('Opção Inválida.')
+
+            #sections = utils.parse_sectioned_prompt(prompt)
             task_section = sections['tarefa'].strip()
 
             # evaluate prompt on minibatch

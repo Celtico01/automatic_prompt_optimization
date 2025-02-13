@@ -94,7 +94,7 @@ class CachedLogLikelihoodScorer:
         computed_scores = compute_scores(prompts_exs_to_compute)
         for prompt, ex in prompts_exs_to_compute:
             self.cache[f'{ex}-{prompt}'] = computed_scores[f'{ex}-{prompt}']
-            cached_scores[prompt].append(computed_scores[f'{ex}-{prompt}'])
+            cached_scores[prompt].append(computed_scores[f'{ex}-{prompt}'])#
 
         if agg == 'mean':
             return [np.mean(cached_scores[prompt]) for prompt in prompts]

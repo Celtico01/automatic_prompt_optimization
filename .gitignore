@@ -5,3 +5,6 @@ gerar_dados.ipynb
 /data/resultado/*
 lista de proximos passos.txt
 data
+modelos_llama
+txts
+instalar_modelos.sh

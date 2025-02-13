@@ -71,7 +71,7 @@ def get_args():
     parser.add_argument('--mc_samples_per_step', default=2, type=int)
     parser.add_argument('--max_expansion_factor', default=8, type=int)
 
-    parser.add_argument('--engine', default="chatgpt", type=str)
+    parser.add_argument('--engine', default="gpt", type=str)
 
     parser.add_argument('--evaluator', default="bf", type=str)
     parser.add_argument('--scorer', default="01", type=str)
@@ -95,6 +95,7 @@ if __name__ == '__main__':
     saida = {}
 
     config = vars(args)
+    #print(config)
 
     config['eval_budget'] = config['samples_per_eval'] * config['eval_rounds'] * config['eval_prompts_per_round']
     
@@ -142,16 +143,16 @@ if __name__ == '__main__':
         # expand candidates
         if round > 0:
             candidates = optimizer.expand_candidates(candidates, task, gpt4, train_exs)
-        print(1)
+        #print(1)
         # score candidates
         scores = optimizer.score_candidates(candidates, task, gpt4, train_exs)
         print(scores)
         [scores, candidates] = list(zip(*sorted(list(zip(scores, candidates)), reverse=True)))
-        print(2)
+        #print(2)
         # select candidates
         candidates = candidates[:config['beam_size']]
         scores = scores[:config['beam_size']]
-        print(3)
+        #print(3)
         rounds['round'+str(cont)] = {'hora_producao' : datetime.now().strftime("%d/%m/%Y %H:%M:%S"),
                                     'candidatos' : candidates,
                                     'scores' : scores
@@ -188,13 +189,13 @@ if __name__ == '__main__':
     for key, value in rounds.items():  # Correção no acesso às chaves e valores       
         if key == 'round0':  # Ignorar o round 0
             continue
-        print(key)
-        print(value)
+        #print(key)
+        #print(value)
         candidatos_list = list(rounds[key]['candidatos'])  # Converter tuplas em listas
         scores_list = list(rounds[key]['scores'])  
 
-        print(candidatos_list)
-        print(scores_list)
+        #print(candidatos_list)
+        #print(scores_list)
 
         if candidatos_list and scores_list:  # Verifica se não estão vazios
             max_index = scores_list.index(max(scores_list))  # Obtém o índice do maior score
