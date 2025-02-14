@@ -188,7 +188,7 @@ class ProTeGi(PromptOptimizer):
 
         new_prompts = []
         for prompt in tqdm(prompts, desc=f'expanding {len(prompts)} prompts'):
-            print(self.opt)
+            #print(self.opt)
             if self.opt['engine'] == 'gpt':
                 sections = utils.parse_sectioned_prompt(prompt)
             elif self.opt['engine'] == 'deepseek':

@@ -8,3 +8,5 @@ data
 modelos_llama
 txts
 instalar_modelos.sh
+.venv_310
+scripts

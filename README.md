@@ -4,7 +4,7 @@
 [LMOps - Prompt Optimization](https://github.com/microsoft/LMOps/tree/main/prompt_optimization)
 
 ## Tested Python Version
-- Python 3.13.0
+- Python 3.10
 
 ## Flags
 
