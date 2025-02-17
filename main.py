@@ -181,30 +181,32 @@ if __name__ == '__main__':
     #with open(args.out, 'a') as outf:  
         #outf.write(f'{metrics}\n--------\n')
     
-    
-    melhor_candidato = None 
-    melhor_score = -1 
-    melhor_round = 0
+    try:
+        melhor_candidato = None 
+        melhor_score = -1 
+        melhor_round = 0
 
-    for key, value in rounds.items():  # Correção no acesso às chaves e valores       
-        if key == 'round0':  # Ignorar o round 0
-            continue
-        #print(key)
-        #print(value)
-        candidatos_list = list(rounds[key]['candidatos'])  # Converter tuplas em listas
-        scores_list = list(rounds[key]['scores'])  
+        for key, value in rounds.items():  # Correção no acesso às chaves e valores       
+            if key == 'round0':  # Ignorar o round 0
+                continue
+            #print(key)
+            #print(value)
+            candidatos_list = list(rounds[key]['candidatos'])  # Converter tuplas em listas
+            scores_list = list(rounds[key]['scores'])  
 
-        #print(candidatos_list)
-        #print(scores_list)
+            #print(candidatos_list)
+            #print(scores_list)
 
-        if candidatos_list and scores_list:  # Verifica se não estão vazios
-            max_index = scores_list.index(max(scores_list))  # Obtém o índice do maior score
-            if scores_list[max_index] > melhor_score:  # Verifica se é o melhor score encontrado
-                melhor_score = scores_list[max_index]
-                melhor_candidato = candidatos_list[max_index]
-                melhor_round = 'prompt_' + key
+            if candidatos_list and scores_list:  # Verifica se não estão vazios
+                max_index = scores_list.index(max(scores_list))  # Obtém o índice do maior score
+                if scores_list[max_index] > melhor_score:  # Verifica se é o melhor score encontrado
+                    melhor_score = scores_list[max_index]
+                    melhor_candidato = candidatos_list[max_index]
+                    melhor_round = 'prompt_' + key
 
-    print(f"Melhor candidato: {melhor_candidato} com score {melhor_score}")
+        print(f"Melhor candidato: {melhor_candidato} com score {melhor_score}")
+    except Exception as e:
+        print(e)
 
     try:
         f1, texts, labels, preds = task.evaluate(gpt4, melhor_candidato, test_exs, n=args.n_test_exs)

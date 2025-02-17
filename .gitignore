@@ -10,3 +10,5 @@ txts
 instalar_modelos.sh
 .venv_310
 scripts
+executar_testes.sh
+log_execucao.txt

@@ -109,49 +109,49 @@ def DEEPSEEK(prompt, n=1, top_p=1, stop=None, presence_penalty=0, frequency_pena
         return []
 
 #llama
-def LLAMA(prompt, top_p=1, stop=["[/INST]"], presence_penalty=0, frequency_penalty=0, logit_bias={}):
+
+
+def LLAMA(prompt, top_p=1):
+    raise Exception('Não implementado')
     try:
-        raise Exception('Implementação em andamento.')
         # Caminho local onde o modelo foi baixado
         model_path = os.getenv('LLAMA_MODEL_PATH')
-        
+
         # Carregar o tokenizer e o modelo
         os.environ['TF_ENABLE_ONEDNN_OPTS'] = '0'
+        tokenizer = AutoTokenizer.from_pretrained(model_path)
+        model = AutoModelForCausalLM.from_pretrained(model_path)
 
-        tokenizer  = AutoTokenizer.from_pretrained("nvidia/Nemotron-Mini-4B-Instruct")
-        model = AutoModelForCausalLM.from_pretrained("nvidia/Nemotron-Mini-4B-Instruct", config=model_path)
         # Verificando se há uma GPU e, se houver, movendo o modelo para a GPU
         device = "cuda" if torch.cuda.is_available() else "cpu"
+        print(device)
         model.to(device)
 
-    except Exception as e:
-        raise Exception(f'Erro ao tentar iniciar modelo: {e}')
-    
-    try:
-        # Tokenizando o prompt de entrada
-        inputs = tokenizer(prompt, return_tensors="pt").to(device)
+        # Criando a estrutura de mensagens
+        messages = [
+            {"role": "system", "content": "You are a friendly chatbot."},
+            {"role": "user", "content": prompt},
+        ]
+
+        # Tokenizando o prompt
+        tokenized_chat = tokenizer.apply_chat_template(messages, tokenize=True, add_generation_prompt=True, return_tensors="pt").to(device)
 
         # Gerando a resposta
-        output = model.generate(
-            **inputs, 
-            do_sample=True,
-            max_length=os.getenv('MAX_TOKENS_LLAMA'),  # Max tokens para a resposta
-            top_p=top_p, 
-            temperature=float(os.getenv('TEMPERATURE_LLAMA', 0.0)),
-            #presence_penalty=presence_penalty,
-            #requency_penalty=frequency_penalty,
-            #do_sample=True,  # Ativar amostragem para diversidade de respostas
-            #top_k=50,  # Top-K sampling para limitar as opções de saída
-            pad_token_id=tokenizer.eos_token_id  # Certifique-se de usar o token correto para finalização
+        outputs = model.generate(
+            tokenized_chat,
+            do_sample=os.getenv('DO_SAMPLE', 'false').lower() == 'true',
+            max_length=int(os.getenv('MAX_TOKENS_LLAMA', 128)),
+            top_p=top_p,
+            temperature=float(os.getenv('TEMPERATURE_LLAMA', 0.1)) if os.getenv('DO_SAMPLE', 'false').lower() == 'true' else None,
+            pad_token_id=tokenizer.eos_token_id
         )
 
-        # Decodificando a resposta gerada
-        response = tokenizer.decode(output, skip_special_tokens=True)
-
-        return response
+        # Decodificando e retornando a resposta
+        return tokenizer.decode(outputs[0], skip_special_tokens=True)
 
     except Exception as e:
         raise Exception(f'Erro ao gerar resposta: {e}')
+
 '''
 #def LLAMA(prompt, top_p=1, stop=["[/INST]"], presence_penalty=0, frequency_penalty=0, logit_bias={}):
 #    try:
@@ -180,5 +180,3 @@ def LLAMA(prompt, top_p=1, stop=["[/INST]"], presence_penalty=0, frequency_penal
 
 '''
 
-
-print(LLAMA('hi'))

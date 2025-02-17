@@ -37,6 +37,8 @@
 - **knn_k**: Número de vizinhos a ser considerado no KNN (int). *Não utilizado*.  
 - **knn_t**: Limiar de confiança ou similaridade no KNN (float). *Não utilizado*.  
 - **reject_on_errors**: Define se a expansão de novos prompts deve ser filtrada com base em exemplos de erro (bool).  
-- **eval_budget**: Quantidade total de amostras avaliadas pelo sistema, calculado como `config['samples_per_eval'] * config['eval_rounds'] * config['eval_prompts_per_round']` (int).  
+- **eval_budget**: Quantidade total de amostras avaliadas pelo sistema, calculado como `config['samples_per_eval'] * config['eval_rounds'] * config['eval_prompts_per_round']` (int).
+
+
 - **Exemplo**: py .\main.py --task despacho --data_dir ./data/despacho_saneador/dados_json/ --prompts ./prompts/despacho_saneador.md --out ./data/resultado --max_threads 4 --nome_saida teste_nova_versao --rounds 1 --beam_size 2 --n_test_exs 10 --minibatch_size 2 --n_gradients 2 --errors_per_gradient 2 --max_expansion_factor 2 --eval_rounds 2 --eval_prompts_per_round 2 
 
