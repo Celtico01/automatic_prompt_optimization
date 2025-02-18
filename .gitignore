@@ -4,7 +4,12 @@ __pycache__
 gerar_dados.ipynb
 /data/resultado/*
 lista de proximos passos.txt
-data
+data/decisao_inicial/
+data/despacho_saneador/
+data/experimentos_prof_vasco/
+data/replica
+data/resultado/
+amostra-relavidacao1-240920-50amostras_revisao.csv
 modelos_llama
 txts
 instalar_modelos.sh
@@ -12,3 +17,6 @@ instalar_modelos.sh
 scripts
 executar_testes.sh
 log_execucao.txt
+prompts/decisao_inicial/
+prompts/despacho_saneador/
+prompts/replica/
