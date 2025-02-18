@@ -42,3 +42,39 @@
 
 - **Exemplo**: py .\main.py (suas flags)
 
+
+## Setup (Configuração)
+
+### 1. Configuração do Arquivo `.env`
+- Crie um arquivo `.env`.
+- Use o arquivo `.env-example` como referência e defina as variáveis de acordo com suas preferências.
+
+### 2. Configuração do Ambiente Virtual
+- Crie um ambiente virtual:
+  ```sh
+  py -m venv .venv
+  ```
+- Ative o ambiente virtual:
+  - **Windows:**
+    ```sh
+    .\.venv\Scripts\activate
+    ```
+  - **Linux/macOS:**
+    ```sh
+    source .venv/bin/activate
+    ```
+- Instale as dependências:
+  ```sh
+  pip install -r requirements.txt
+  ```
+  **Nota:** Você pode pular a criação do ambiente virtual e apenas instalar as dependências, se preferir.
+
+### 3. Estrutura de Exemplos
+- Verifique os exemplos de **teste** e **treino** e siga a mesma estrutura.
+- O mesmo vale para os **prompts**: a estrutura deve ser mantida.
+
+### 4. Execução do Script
+- Leia sobre as flags disponíveis e execute o script com o comando:
+  ```sh
+  py main.py --flag1 var1 --flag2 var2 --flag3 var3
+  ```
