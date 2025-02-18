@@ -1,4 +1,4 @@
-﻿# Gradient-Based Automatic Prompt Optimization for Brazilian Document Classification
+﻿# Automatic Prompt Optimization
 
 ## Inspired By
 [LMOps - Prompt Optimization](https://github.com/microsoft/LMOps/tree/main/prompt_optimization)
