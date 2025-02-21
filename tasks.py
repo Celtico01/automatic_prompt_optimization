@@ -56,19 +56,22 @@ class ClassificationTask(DataProcessor):
                 print(f"Erro ao processar um futuro: {e}")
                 exit(e)
 
+        f1_micro_positivo = f1_score(labels, preds, average='micro', labels=[1])
+        f1_micro = f1_score(labels, preds, average='micro')
+        
+        f1_macro = f1_score(labels, preds, average='macro')
+        f1_weighted = f1_score(labels, preds, average='weighted')
 
-        accuracy = accuracy_score(labels, preds)
-        f1 = f1_score(labels, preds, average='micro')
-        return f1, texts, labels, preds
+        return f1_micro_positivo, f1_micro, f1_macro, f1_weighted, texts, labels, preds
 
     def evaluate(self, predictor, prompt, test_exs, n=100):
         while True:
             try:
-                f1, texts, labels, preds = self.run_evaluate(predictor, prompt, test_exs, n=n)
+                f1_micro_positivo, f1_micro, f1_macro, f1_weighted, texts, labels, preds = self.run_evaluate(predictor, prompt, test_exs, n=n)
                 break
             except (concurrent.futures.process.BrokenProcessPool, requests.exceptions.SSLError):
                 pass
-        return f1, texts, labels, preds
+        return f1_micro_positivo, f1_micro, f1_macro, f1_weighted, texts, labels, preds
 
 
 class BinaryClassificationTask(ClassificationTask):

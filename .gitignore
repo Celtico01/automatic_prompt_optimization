@@ -9,6 +9,8 @@ data/despacho_saneador/
 data/experimentos_prof_vasco/
 data/replica
 data/resultado/
+data/alegacoes_finais/
+data/laudo_pericial/
 amostra-relavidacao1-240920-50amostras_revisao.csv
 modelos_llama
 txts
@@ -20,3 +22,6 @@ log_execucao.txt
 prompts/decisao_inicial/
 prompts/despacho_saneador/
 prompts/replica/
+prompts/alegacoes_finais/
+prompts/laudo_pericial/
+resultados

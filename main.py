@@ -95,7 +95,6 @@ if __name__ == '__main__':
     saida = {}
 
     config = vars(args)
-    #print(config)
 
     config['eval_budget'] = config['samples_per_eval'] * config['eval_rounds'] * config['eval_prompts_per_round']
     
@@ -113,25 +112,14 @@ if __name__ == '__main__':
     config['training_data_size'] = len(train_exs)
     config['test_data_size'] = len(test_exs)
 
-    # to be removed
-    #if os.path.exists(args.out):
-        #os.remove(args.out)
-
     print(config)
-    #to remove
-    #with open(args.out, 'a') as outf:
-    #    outf.write(json.dumps(config) + '\n')
+
     saida['configuracoes'] = {'config' : config,
                               'modelo' : os.getenv('MODEL'),
                               'max_tokens' : os.getenv('MAX_TOKENS')}
     rounds = {}
     
     candidates = [open(fp.strip(), 'r', encoding='utf-8').read() for fp in args.prompts.split(',')]
-
-    #saida['round0'] = {'hora_producao' : datetime.now().strftime("%d/%m/%Y %H:%M:%S"),
-    #                   'candidatos' : candidates[0],
-    #                   'scores' : None
-    #                    }
 
     cont=0
     for round in tqdm(range(config['rounds'] + 1)):
@@ -158,29 +146,13 @@ if __name__ == '__main__':
                                     'scores' : scores
                                     }
         cont+=1
-        #to be removed
-        # record candidates, estimated scores, and true scores
-        #with open(args.out, 'a', encoding='utf-8') as outf:
-        #    outf.write(f"======== ROUND {round}\n--------\n")
-        #    outf.write(f'{datetime.now().strftime("%d/%m/%Y %H:%M:%S")}\n--------\n')
-        #    outf.write(f'{candidates}\n--------\n')
-        #    outf.write(f'{scores}\n--------\n')
-        #print(4)
-    
-    # TODO : Testar apenas o melhor candidato e não todos! - DONE to be removed
-    # TODO : Melhorar estrutura de saida - DONE to be removed
-    
-    # to remove
-    #for candidate, score in zip(candidates, scores):
-        #print(5)
-        #f1, texts, labels, preds = task.evaluate(gpt4, candidate, test_exs, n=args.n_test_exs)
-        #print(6)
         
-    # to remove    
-        #metrics.append(f1)
-    #with open(args.out, 'a') as outf:  
-        #outf.write(f'{metrics}\n--------\n')
-    
+        # encerra a iteração se encontrar score == 1.0
+        for score in scores:
+            if score == 1.0:
+                break
+
+        
     try:
         melhor_candidato = None 
         melhor_score = -1 
@@ -209,17 +181,26 @@ if __name__ == '__main__':
         print(e)
 
     try:
-        f1, texts, labels, preds = task.evaluate(gpt4, melhor_candidato, test_exs, n=args.n_test_exs)
+        f1_micro_positivo, f1_micro, f1_macro, f1_weighted, texts, labels, preds = task.evaluate(gpt4, melhor_candidato, test_exs, n=args.n_test_exs)
 
     except Exception as e:
         print(e)
 
     finally:
         saida['rounds'] = rounds
-        saida['melhor_candidato'] = melhor_candidato if melhor_candidato else None
-        saida['melhor_score'] = melhor_score if melhor_score else None
-        saida['melhor_round'] = melhor_round if melhor_round else None
-        saida['f1_melhor'] = f1 if f1 else None
+
+        test = {'textos' : texts,
+                'labels' : labels,
+                'preds' : preds,
+                'f1_micro_positivo' : f1_micro_positivo,
+                'f1_micro' : f1_micro, 
+                'f1_macro' : f1_macro, 
+                'f1_weighted' : f1_weighted,
+                'melhor_score' : melhor_score if melhor_score else None,
+                'melhor_round' : melhor_round if melhor_round else None,
+                'melhor_candidato' : melhor_candidato if melhor_candidato else None}
+        
+        saida['teste'] = test
 
         dict_final = {}
         dict_final[args.nome_saida] = saida
