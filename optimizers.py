@@ -85,7 +85,7 @@ class ProTeGi(PromptOptimizer):
         gradient_prompt = '\n'.join([line.lstrip() for line in gradient_prompt.split('\n')])
         
         if self.opt['engine'] == 'gpt':
-            res = utils.GPT(gradient_prompt, n=n)
+            res = utils.GPT(gradient_prompt)#, n=n)
         elif self.opt['engine'] == 'deepseek':
             raise Exception('Não Implementado ainda')
         elif self.opt['engine'] == 'llama':
@@ -137,7 +137,7 @@ class ProTeGi(PromptOptimizer):
 
         transformation_prompt = '\n'.join([line.lstrip() for line in transformation_prompt.split('\n')])
         if self.opt['engine'] == 'gpt':
-            res = utils.GPT(transformation_prompt, n=n)
+            res = utils.GPT(transformation_prompt)#, n=n)
         elif self.opt['engine'] == 'deepseek':
             raise Exception('Não Implementado ainda')
         elif self.opt['engine'] == 'llama':
@@ -157,7 +157,7 @@ class ProTeGi(PromptOptimizer):
         rewriter_prompt = f"Gerar uma variação da seguinte instrução mantendo o mesmo significado semântico.\n\nEntrada: {prompt_section}\n\nSaída:"
         
         if self.opt['engine'] == 'gpt':
-            new_instructions = utils.GPT(rewriter_prompt, n=n)
+            new_instructions = utils.GPT(rewriter_prompt)#, n=n)
         elif self.opt['engine'] == 'deepseek':
             raise Exception('Não Implementado ainda')
         elif self.opt['engine'] == 'llama':

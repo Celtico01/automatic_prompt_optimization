@@ -122,11 +122,11 @@ if __name__ == '__main__':
     candidates = [open(fp.strip(), 'r', encoding='utf-8').read() for fp in args.prompts.split(',')]
 
     cont=0
+    end_loop = False
     for round in tqdm(range(config['rounds'] + 1)):
         candidato=1
         # TODO arrumar estrutura de saida...
         print("STARTING ROUND ", round)
-        start = time.time()
 
         # expand candidates
         if round > 0:
@@ -135,21 +135,27 @@ if __name__ == '__main__':
         # score candidates
         scores = optimizer.score_candidates(candidates, task, gpt4, train_exs)
         print(scores)
+        qtde_prompts = len(scores)
+        print(qtde_prompts)
         [scores, candidates] = list(zip(*sorted(list(zip(scores, candidates)), reverse=True)))
-        #print(2)
         # select candidates
         candidates = candidates[:config['beam_size']]
         scores = scores[:config['beam_size']]
         #print(3)
         rounds['round'+str(cont)] = {'hora_producao' : datetime.now().strftime("%d/%m/%Y %H:%M:%S"),
                                     'candidatos' : candidates,
-                                    'scores' : scores
+                                    'scores' : scores,
+                                    'qtde_prompts_avaliados' : qtde_prompts
                                     }
         cont+=1
         
         # encerra a iteração se encontrar score == 1.0
-        for score in scores:
-            if score == 1.0:
+        if round > 0:
+            for score in scores:
+                if score == 1.0:
+                    end_loop = True
+        if round > 0:
+            if end_loop == True:
                 break
 
         

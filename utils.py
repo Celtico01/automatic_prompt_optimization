@@ -45,7 +45,7 @@ def instructGPT_logprobs(prompt, temperature=0.5):
         print(f"Erro na API: {e}")
         return []
         
-def GPT(prompt, n=1, top_p=1, stop=None, presence_penalty=0, frequency_penalty=0, logit_bias={}, timeout=80):
+def GPT(prompt, timeout=80):
     messages = [{"role": "user", "content": prompt}]
     try:
         client_openai = openai.OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
@@ -56,13 +56,13 @@ def GPT(prompt, n=1, top_p=1, stop=None, presence_penalty=0, frequency_penalty=0
             model=os.getenv("MODEL"),
             messages=messages,
             temperature=float(os.getenv("TEMPERATURE", 0.0)),
-            n=n,
-            top_p=top_p,
-            stop=stop,
+            #n=n,
+            #top_p=top_p,
+            #stop=stop,
             max_tokens=int(os.getenv("MAX_TOKENS", 10000)),
-            presence_penalty=presence_penalty,
-            frequency_penalty=frequency_penalty,
-            logit_bias=logit_bias,
+            #presence_penalty=presence_penalty,
+            #frequency_penalty=frequency_penalty,
+            #logit_bias=logit_bias,
             timeout=timeout,
         )
         #for choice in response.choices:
