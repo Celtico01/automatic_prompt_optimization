@@ -1,9 +1,9 @@
 ﻿# Automatic Prompt Optimization
 
-## Inspired By
+## Inspirado no REPO:
 [LMOps - Prompt Optimization](https://github.com/microsoft/LMOps/tree/main/prompt_optimization)
 
-## Tested Python Version
+## Versão Testada
 - Python 3.10
 
 ## Flags
@@ -78,3 +78,4 @@
   ```sh
   py main.py --flag1 var1 --flag2 var2 --flag3 var3
   ```
+
